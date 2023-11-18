@@ -1,3 +1,4 @@
 # Controle-Pacientes
-[![Abrir Site Local](button.png)](../../tree/master/index.html)
+[![Abrir Site Local](button.png)](../../tree/master)
+
 
