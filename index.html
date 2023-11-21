@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clínica - Anexos de Pacientes</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+<h1>Anexos de Pacientes</h1>
+
+<form id="formulario">
+    <label for="nome">Nome do Paciente:</label>
+    <input type="text" id="nome" required>
+    
+    <label for="codigo">Código do Paciente:</label>
+    <input type="text" id="codigo" required>
+
+    <label for="autor">Autor do Template:</label>
+    <input type="text" id="autor" required>
+
+    <label for="clinica">Nome da Clínica:</label>
+    <input type="text" id="clinica" required>
+
+    <button type="button" onclick="adicionarPaciente()">Adicionar Paciente</button>
+</form>
+
+<label for="mesDropdown">Selecionar Mês:</label>
+<select id="mesDropdown" onchange="filtrarPorMes()">
+    <option value="0">Todos os Meses</option>
+    <option value="1">Janeiro</option>
+    <option value="2">Fevereiro</option>
+    <option value="3">Março</option>
+    <option value="4">Abril</option>
+    <option value="5">Maio</option>
+    <option value="6">Junho</option>
+    <option value="7">Julho</option>
+    <option value="8">Agosto</option>
+    <option value="9">Setembro</option>
+    <option value="10">Outubro</option>
+    <option value="11">Novembro</option>
+    <option value="12">Dezembro</option>
+</select>
+
+<table id="tabela">
+    <tr>
+        <th>Nome do Paciente</th>
+        <th>Código do Paciente</th>
+        <th>Autor do Template</th>
+        <th>Nome da Clínica</th>
+        <th>Mês de Criação</th>
+    </tr>
+</table>
+
+<script>
+    // Recuperar dados do localStorage ao carregar a página
+    document.addEventListener("DOMContentLoaded", function() {
+        carregarPacientes();
+    });
+
+    // Mapear os números de mês para os nomes
+    var nomesMeses = [
+        "Nenhum",
+        "Janeiro",
+        "Fevereiro",
+        "Março",
+        "Abril",
+        "Maio",
+        "Junho",
+        "Julho",
+        "Agosto",
+        "Setembro",
+        "Outubro",
+        "Novembro",
+        "Dezembro"
+    ];
+
+    function adicionarPaciente() {
+        var nome = document.getElementById("nome").value;
+        var codigo = document.getElementById("codigo").value;
+        var autor = document.getElementById("autor").value;
+        var clinica = document.getElementById("clinica").value;
+        
+        // Obter o mês atual
+        var mesAtual = new Date().getMonth() + 1; // +1 pois os meses começam do zero no JavaScript
+
+        // Criar objeto paciente
+        var paciente = {
+            nome: nome,
+            codigo: codigo,
+            autor: autor,
+            clinica: clinica,
+            mes: mesAtual
+        };
+
+        // Adicionar paciente ao localStorage
+        salvarPaciente(paciente);
+
+        // Atualizar tabela
+        carregarPacientes();
+
+        // Limpar os campos do formulário após adicionar o paciente
+        document.getElementById("nome").value = "";
+        document.getElementById("codigo").value = "";
+        document.getElementById("autor").value = "";
+        document.getElementById("clinica").value = "";
+    }
+
+    function salvarPaciente(paciente) {
+        // Obter os pacientes do localStorage
+        var pacientes = JSON.parse(localStorage.getItem("pacientes")) || [];
+
+        // Adicionar o novo paciente à lista
+        pacientes.push(paciente);
+
+        // Salvar a lista atualizada de pacientes no localStorage
+        localStorage.setItem("pacientes", JSON.stringify(pacientes));
+    }
+
+    function carregarPacientes() {
+        var tabela = document.getElementById("tabela");
+        // Limpar a tabela
+        tabela.innerHTML = "<tr><th>Nome do Paciente</th><th>Código do Paciente</th><th>Autor do Template</th><th>Nome da Clínica</th><th>Mês de Criação</th></tr>";
+
+        // Obter os pacientes do localStorage
+        var pacientes = JSON.parse(localStorage.getItem("pacientes")) || [];
+
+        // Adicionar os pacientes à tabela
+        pacientes.forEach(function(paciente) {
+            var linha = tabela.insertRow(-1);
+
+            var celulaNome = linha.insertCell(0);
+            var celulaCodigo = linha.insertCell(1);
+            var celulaAutor = linha.insertCell(2);
+            var celulaClinica = linha.insertCell(3);
+            var celulaMes = linha.insertCell(4);
+
+            celulaNome.textContent = paciente.nome;
+            celulaCodigo.textContent = paciente.codigo;
+            celulaAutor.textContent = paciente.autor;
+            celulaClinica.textContent = paciente.clinica;
+
+            // Exibir o nome do mês em vez do número
+            celulaMes.textContent = nomesMeses[paciente.mes];
+        });
+    }
+
+    function filtrarPorMes() {
+        // A função de filtragem permanece a mesma
+        var tabela = document.getElementById("tabela");
+        var linhas = tabela.getElementsByTagName("tr");
+        var mesSelecionado = parseInt(document.getElementById("mesDropdown").value, 10);
+
+        for (var i = 1; i < linhas.length; i++) {
+            var celulaMes = linhas[i].getElementsByTagName("td")[4]; // Assumindo que a coluna do mês é a quinta (índice 4)
+
+            if (celulaMes) {
+                var mesPaciente = nomesMeses.indexOf(celulaMes.textContent);
+
+                if (mesSelecionado === 0 || mesPaciente === mesSelecionado) {
+                    linhas[i].style.display = "";
+                } else {
+                    linhas[i].style.display = "none";
+                }
+            }
+        }
+    }
+</script>
+
+</body>
+</html>
